@@ -32,24 +32,27 @@ const todoList = document.querySelector(".todos");
 //event listeners
 todoList.addEventListener("click", deleteCheck);
 
+
+//gets all needed data from firestore database
 getDocs(colRef)
   .then((snapshot) => {
     let todos = [];
     snapshot.docs.forEach((doc) => {
       todos.push({ ...doc.data(), id: doc.id });
     });
-    let duzinatodos = todos.length;
-    showAll(duzinatodos, todos);
-
+    let lentodos = todos.length;
+    showAll(lentodos, todos);
     todoButton.addEventListener("click", addToFirebase);
-    console.log(todos[1].id); ///sooooooooooooooooooooooooo important most important part to know
   })
   .catch((err) => {
     console.log(err.message);
   });
 
-function showAll(duzinatodos, todos) {
-  for (let i = 0; i < duzinatodos; i++) {
+
+
+//shows all previously added todos
+function showAll(lentodos, todos) {
+  for (let i = 0; i < lentodos; i++) {
     const todoDiv = document.createElement("div");
     todoDiv.classList.add("todo");
     const newTodo = document.createElement("li");
@@ -74,6 +77,7 @@ function showAll(duzinatodos, todos) {
   }
 }
 
+//adds new todo to firebase and calls addTodo function
 function addToFirebase() {
   if (todoInput.value !== "") {
     const doc = addDoc(colRef, { todo: todoInput.value }).then((doc) => {
@@ -82,6 +86,7 @@ function addToFirebase() {
   }
 }
 
+//deletes a todo from the database only
 function deleteFromFirebase(id) {
   const docRef = doc(db, "todos", id);
   deleteDoc(docRef).then(() => {
@@ -89,14 +94,14 @@ function deleteFromFirebase(id) {
   });
 }
 
-//adding function
+//adds a todo to screen and assigns it an id, after adding it to firebase
 function addTodo(id) {
   const todoDiv = document.createElement("div");
   todoDiv.classList.add("todo");
 
   const newTodo = document.createElement("li");
   newTodo.innerText = todoInput.value;
-  console.log(id);
+
   newTodo.id = id;
   newTodo.classList.add("todoItm");
   todoDiv.appendChild(newTodo);
@@ -117,10 +122,12 @@ function addTodo(id) {
   todoInput.value = "";
 }
 
-//deleting and checking todos function
+//deleting and checking
+//checks which button is clicked
+//if the trash icon is clicked it deletes the todo from screen and calls the deleteFromFirebase function
+//if the check icon is clicked it 
 function deleteCheck(e) {
   const item = e.target;
-  //ovo deletea sa stranice todo kad se klikne trash, al treba i sa firestorea da deletea isto info
   if (item.classList[0] === "trash") {
     const todo = item.parentElement;
     todo.classList.add("sliding");
